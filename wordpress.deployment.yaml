@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wordpress
+  spec:
+      containers:
+      - name: wordpress-app
+        image: quay.io/jonasbjork/lernialab:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: wordpress-data
+          mountPath: /opt/app-root/src
+        - name: wp-config-file
+          mountPath: /opt/app-root/src/wp-config.php
+          subPath: wp-config.php
+      volumes:
+      - name: wp-config-file
+        configMap:
+          name: wp-config-php
+          items:
+          - key: wp-config.php
+            path: wp-config.php
+      - name: wordpress-data
+        persistentVolumeClaim:
+          claimName: wordpress-pvc
+
+
+
+
